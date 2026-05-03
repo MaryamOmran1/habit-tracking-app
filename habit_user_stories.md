@@ -1,6 +1,7 @@
 # Habit Tracking App User Story
 
 ## Login/Registration Screen
+### User Stories
 1. #### Application registration:
    A user can register by entering their username, email, and password, and then clicking the Sign Up button.
 2. #### Application login:
