@@ -12,6 +12,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
 
   Future<bool> _authenticateUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -23,6 +24,10 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _validateForm() {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       _showErrorDialog('Please fill in all fields.');
+      return false;
+    }
+    if (!_emailController.text.contains('@')) {
+      _showErrorDialog('Please enter a valid email address.');
       return false;
     }
     return true;
@@ -45,23 +50,32 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleLogin() async {
-    if (_validateForm()) {
+    if (!_validateForm()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
       if (await _authenticateUser()) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Success'),
-            content: const Text('Login successful!'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
+        if (mounted) {
+          // ✅ نجاح تسجيل الدخول - الانتقال إلى شاشة الرئيسية
+          Navigator.pushReplacementNamed(context, '/home');
+        }
       } else {
-        _showErrorDialog('The username or password was incorrect');
+        if (mounted) {
+          _showErrorDialog('The username or password was incorrect');
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        _showErrorDialog('An error occurred. Please try again.');
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
@@ -88,15 +102,30 @@ class _LoginScreenState extends State<LoginScreen> {
                 const Text(
                   'Habitt',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 42, fontWeight: FontWeight.bold, color: Colors.blue),
+                  style: TextStyle(
+                    fontSize: 42,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Track your habits & meditate daily',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 const SizedBox(height: 50),
                 TextField(
                   controller: _emailController,
                   decoration: const InputDecoration(
                     labelText: 'Email',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+                    hintText: 'Enter your email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                    prefixIcon: Icon(Icons.email),
                   ),
+                  keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 20),
                 TextField(
@@ -104,9 +133,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: !_isPasswordVisible,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+                    hintText: 'Enter your password',
+                    border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                    prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
-                      icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off),
+                      icon: Icon(
+                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                      ),
                       onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                     ),
                   ),
@@ -121,12 +156,27 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: _handleLogin,
+                  onPressed: _isLoading ? null : _handleLogin,
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 50),
                     backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('Log In', style: TextStyle(fontSize: 16, color: Colors.white)),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Text(
+                          'Log In',
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
                 ),
                 const SizedBox(height: 20),
                 Row(children: [
@@ -140,7 +190,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 20),
                 TextButton(
                   onPressed: () => Navigator.pushReplacementNamed(context, '/register'),
-                  child: const Text('Sign up', style: TextStyle(fontSize: 16)),
+                  child: const Text(
+                    'Sign up',
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
               ],
             ),
@@ -148,5 +201,12 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }
