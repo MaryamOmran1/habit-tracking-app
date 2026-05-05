@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/habit.dart';
 import '../widgets/habit_card.dart';
+import 'detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -206,6 +207,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Welcome Section
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
@@ -239,6 +241,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 20),
+
+            // Popular Meditations Section
             _buildSectionHeader('Popular Meditations', Icons.local_fire_department),
             SizedBox(
               height: 240,
@@ -248,81 +252,94 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemCount: meditationList.length,
                 itemBuilder: (context, index) {
                   final meditation = meditationList[index];
-                  return Container(
-                    width: 280,
-                    margin: const EdgeInsets.only(right: 16),
-                    child: Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.purple.shade100,
-                                    borderRadius: BorderRadius.circular(12),
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailScreen(
+                            item: meditation,
+                            itemType: 'meditation',
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 280,
+                      margin: const EdgeInsets.only(right: 16),
+                      child: Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.purple.shade100,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Icon(Icons.self_improvement, color: Colors.purple.shade700),
                                   ),
-                                  child: Icon(Icons.self_improvement, color: Colors.purple.shade700),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        meditation.title,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          meditation.title,
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        meditation.category,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.purple.shade600,
+                                        Text(
+                                          meditation.category,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.purple.shade600,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              meditation.description,
-                              style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                Icon(Icons.access_time, size: 16, color: Colors.grey.shade500),
-                                const SizedBox(width: 4),
-                                Text(
-                                  meditation.duration,
-                                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                                ),
-                                const Spacer(),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    _showSnackBar(meditation.title, true);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.purple,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                meditation.description,
+                                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Icon(Icons.access_time, size: 16, color: Colors.grey.shade500),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    meditation.duration,
+                                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                                   ),
-                                  child: const Text('Start', style: TextStyle(fontSize: 12)),
-                                ),
-                              ],
-                            ),
-                          ],
+                                  const Spacer(),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      _showSnackBar(meditation.title, true);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.purple,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                    ),
+                                    child: const Text('Start', style: TextStyle(fontSize: 12)),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -331,6 +348,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 16),
+
+            // To Do Section
             _buildSectionHeader('To Do', Icons.pending_actions),
             todoHabits.isEmpty
                 ? Padding(
@@ -353,13 +372,28 @@ class _HomeScreenState extends State<HomeScreen> {
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: todoHabits.length,
                     itemBuilder: (context, index) {
-                      return HabitCard(
-                        habit: todoHabits[index],
-                        onToggle: () => _toggleHabitStatus(todoHabits[index], true),
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailScreen(
+                                item: todoHabits[index],
+                                itemType: 'habit',
+                              ),
+                            ),
+                          );
+                        },
+                        child: HabitCard(
+                          habit: todoHabits[index],
+                          onToggle: () => _toggleHabitStatus(todoHabits[index], true),
+                        ),
                       );
                     },
                   ),
             const SizedBox(height: 16),
+
+            // Done Section
             if (doneHabits.isNotEmpty) ...[
               _buildSectionHeader('Done', Icons.check_circle, color: Colors.green),
               ListView.builder(
@@ -367,9 +401,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: doneHabits.length,
                 itemBuilder: (context, index) {
-                  return HabitCard(
-                    habit: doneHabits[index],
-                    onToggle: () => _toggleHabitStatus(doneHabits[index], false),
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailScreen(
+                            item: doneHabits[index],
+                            itemType: 'habit',
+                          ),
+                        ),
+                      );
+                    },
+                    child: HabitCard(
+                      habit: doneHabits[index],
+                      onToggle: () => _toggleHabitStatus(doneHabits[index], false),
+                    ),
                   );
                 },
               ),
