@@ -3,6 +3,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/habit.dart';
 import '../widgets/habit_card.dart';
 import 'detail_screen.dart';
+import 'personal_info_screen.dart';
+import 'notifications_screen.dart';
+import 'countries_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -114,10 +117,25 @@ class _HomeScreenState extends State<HomeScreen> {
     _showSnackBar(habit.title, !isInTodo);
   }
 
+  // دالة للـ SnackBar الخاصة بإكمال العادات
   void _showSnackBar(String title, bool isCompleted) {
+    String message = isCompleted ? '✅ $title completed!' : '🔄 $title moved back to To Do';
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(isCompleted ? '✅ $title completed!' : '🔄 $title moved back to To Do'),
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: isCompleted ? Colors.green : Colors.orange,
+      ),
+    );
+  }
+
+  // دالة جديدة لعرض رسائل عادية بلون محدد
+  void _showMessage(String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
       ),
@@ -175,6 +193,33 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sign Out'),
+        content: const Text('Are you sure you want to sign out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.clear();
+              if (mounted) {
+                Navigator.pushReplacementNamed(context, '/login');
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Sign Out', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -194,8 +239,9 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.white),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Settings coming soon!')),
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PersonalInfoScreen()),
               );
             },
           ),
@@ -475,8 +521,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  username,
-                  style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                  'Hello, $username!',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 const Text('Habit Tracker', style: TextStyle(color: Colors.white70)),
@@ -489,35 +539,94 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () => Navigator.pop(context),
           ),
           ListTile(
-            leading: const Icon(Icons.self_improvement),
-            title: const Text('Meditations'),
+            leading: const Icon(Icons.person_outline),
+            title: const Text('Personal Info'),
             onTap: () {
               Navigator.pop(context);
-              _showSnackBar('Meditations', false);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PersonalInfoScreen()),
+              );
             },
           ),
           ListTile(
-            leading: const Icon(Icons.insights),
-            title: const Text('Statistics'),
+            leading: const Icon(Icons.assessment),
+            title: const Text('Reports'),
             onTap: () {
               Navigator.pop(context);
-              _showSnackBar('Statistics', false);
+              _showMessage('Reports coming soon!', Colors.blue);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.notifications_none),
+            title: const Text('Notifications'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NotificationsScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.public),
+            title: const Text('Countries API'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CountriesScreen()),
+              );
             },
           ),
           ListTile(
             leading: const Icon(Icons.settings),
-            title: const Text('Settings'),
+            title: const Text('Account Settings'),
             onTap: () {
               Navigator.pop(context);
-              _showSnackBar('Settings', false);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PersonalInfoScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.info_outline),
+            title: const Text('About'),
+            onTap: () {
+              Navigator.pop(context);
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('About Habitt'),
+                  content: const Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.fitness_center, size: 50, color: Colors.blue),
+                      SizedBox(height: 10),
+                      Text('Habitt - Habit Tracker App'),
+                      Text('Version 1.0.0'),
+                      SizedBox(height: 10),
+                      Text('Track your habits and meditate daily!'),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Close'),
+                    ),
+                  ],
+                ),
+              );
             },
           ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.red),
-            title: const Text('Logout', style: TextStyle(color: Colors.red)),
+            title: const Text('Sign Out', style: TextStyle(color: Colors.red)),
             onTap: () {
-              Navigator.pushReplacementNamed(context, '/login');
+              Navigator.pop(context);
+              _showLogoutDialog();
             },
           ),
         ],

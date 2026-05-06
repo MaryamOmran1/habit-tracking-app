@@ -92,25 +92,6 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  void _showSuccessDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Success'),
-        content: const Text('Account created successfully!'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/login');
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> _selectAge() async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -215,7 +196,19 @@ class _SignupScreenState extends State<SignupScreen> {
               onPressed: () async {
                 if (_validateForm()) {
                   await _saveUserData();
-                  _showSuccessDialog();
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Success'),
+                      content: const Text('Account created successfully!'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
                 }
               },
               style: ElevatedButton.styleFrom(

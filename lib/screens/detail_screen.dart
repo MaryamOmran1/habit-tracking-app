@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/habit.dart';
 
-/// شاشة التفاصيل - تعرض معلومات كاملة عن العادة أو التأمل المختار
 class DetailScreen extends StatefulWidget {
   final Habit item;
-  final String itemType; // 'habit' or 'meditation'
+  final String itemType;
 
   const DetailScreen({
     super.key,
@@ -44,19 +43,12 @@ class _DetailScreenState extends State<DetailScreen> {
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: _showEditDialog,
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // أيقونة وصورة
             Center(
               child: Container(
                 width: 120,
@@ -73,18 +65,11 @@ class _DetailScreenState extends State<DetailScreen> {
               ),
             ),
             const SizedBox(height: 24),
-
-            // عنوان العنصر
             Text(
               widget.item.title,
-              style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-
-            // التصنيف
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
@@ -97,8 +82,6 @@ class _DetailScreenState extends State<DetailScreen> {
               ),
             ),
             const SizedBox(height: 16),
-
-            // المدة
             Row(
               children: [
                 Icon(Icons.access_time, color: Colors.grey.shade600),
@@ -110,8 +93,6 @@ class _DetailScreenState extends State<DetailScreen> {
               ],
             ),
             const SizedBox(height: 16),
-
-            // الوصف
             const Text(
               'Description',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -122,8 +103,6 @@ class _DetailScreenState extends State<DetailScreen> {
               style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
             ),
             const SizedBox(height: 24),
-
-            // قسم Configure Habits (حسب الصورة)
             const Divider(),
             const SizedBox(height: 16),
             const Text(
@@ -131,8 +110,6 @@ class _DetailScreenState extends State<DetailScreen> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-
-            // Habit Name
             const Text(
               'Habit Name:',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
@@ -142,15 +119,11 @@ class _DetailScreenState extends State<DetailScreen> {
               controller: _habitNameController,
               decoration: InputDecoration(
                 hintText: 'Enter habit name',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 prefixIcon: const Icon(Icons.edit),
               ),
             ),
             const SizedBox(height: 16),
-
-            // Select Colour
             const Text(
               'Select Colour:',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
@@ -170,8 +143,6 @@ class _DetailScreenState extends State<DetailScreen> {
               ],
             ),
             const SizedBox(height: 20),
-
-            // Add Habit Button
             ElevatedButton.icon(
               onPressed: _addCustomHabit,
               icon: const Icon(Icons.add),
@@ -180,14 +151,10 @@ class _DetailScreenState extends State<DetailScreen> {
                 backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,
                 minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
             ),
             const SizedBox(height: 20),
-
-            // قائمة العادات المضافة
             if (_customHabits.isNotEmpty) ...[
               const Text(
                 'Your Habits:',
@@ -209,21 +176,14 @@ class _DetailScreenState extends State<DetailScreen> {
                     ),
                   )),
             ],
-
             const SizedBox(height: 30),
-
-            // زر العودة
             ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.grey.shade300,
                 foregroundColor: Colors.black,
                 minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               child: const Text('Back to List'),
             ),
@@ -235,11 +195,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
   Widget _buildColorOption(Color color, String name) {
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedColor = color;
-        });
-      },
+      onTap: () => setState(() => _selectedColor = color),
       child: Column(
         children: [
           Container(
@@ -248,9 +204,7 @@ class _DetailScreenState extends State<DetailScreen> {
             decoration: BoxDecoration(
               color: color,
               shape: BoxShape.circle,
-              border: _selectedColor == color
-                  ? Border.all(color: Colors.black, width: 3)
-                  : null,
+              border: _selectedColor == color ? Border.all(color: Colors.black, width: 3) : null,
             ),
           ),
           const SizedBox(height: 4),
@@ -283,54 +237,9 @@ class _DetailScreenState extends State<DetailScreen> {
   }
 
   void _removeCustomHabit(String habit) {
-    setState(() {
-      _customHabits.remove(habit);
-    });
+    setState(() => _customHabits.remove(habit));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('🗑️ "$habit" removed')),
     );
   }
-
-  void _showEditDialog() {
-    final titleController = TextEditingController(text: widget.item.title);
-    final descController = TextEditingController(text: widget.item.description);
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit Item'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: titleController,
-              decoration: const InputDecoration(labelText: 'Title'),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: descController,
-              decoration: const InputDecoration(labelText: 'Description'),
-              maxLines: 3,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // تحديث القيم (هنا تحتاج تمريرها لأعلى)
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Item updated!')),
-              );
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
-  }
-}
+}q

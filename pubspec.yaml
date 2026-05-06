@@ -1,5 +1,5 @@
 name: habit_app
-description: A habit tracking app
+description: A habit tracking and meditation app
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -10,6 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
   shared_preferences: ^2.2.2
+  http: ^1.1.0
+  fluttertoast: ^8.2.4
 
 dev_dependencies:
   flutter_test:

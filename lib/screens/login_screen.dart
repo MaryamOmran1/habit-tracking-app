@@ -59,7 +59,6 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       if (await _authenticateUser()) {
         if (mounted) {
-          // ✅ نجاح تسجيل الدخول - الانتقال إلى شاشة الرئيسية
           Navigator.pushReplacementNamed(context, '/home');
         }
       } else {
